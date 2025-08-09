@@ -26,7 +26,7 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  min-width: 320px;
+  flex-direction: column;
   min-height: 100vh;
 }
 
@@ -91,24 +91,26 @@ button:focus-visible {
 }
 
 #headerImage {
-  size-adjust: -30%;
+  scale: .2;
+  max-width: auto;
 }
 
 #map-container {
-    width: 100%;
-    height: calc(100vh - 80px); /* Full height minus header */
+  width: 100%;
+  height: calc(100vh - 80px);
+  /* Full height minus header */
 }
 
 #map {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 /* Responsive design */
 @media (max-width: 600px) {
-    #map-container {
-        height: calc(100vh - 100px);
-    }
+  #map-container {
+    height: calc(100vh - 100px);
+  }
 }
 
 @media (prefers-color-scheme: light) {
