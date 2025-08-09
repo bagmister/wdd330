@@ -94,6 +94,23 @@ button:focus-visible {
   size-adjust: -30%;
 }
 
+#map-container {
+    width: 100%;
+    height: calc(100vh - 80px); /* Full height minus header */
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+    #map-container {
+        height: calc(100vh - 100px);
+    }
+}
+
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
