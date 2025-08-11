@@ -1,5 +1,8 @@
-const apiKeyParks = import.meta.env.apiKeyParks
-const apiKeyBirds = import.meta.env.apiKeyBirds
+import { map } from './map.js';
+import L from 'leaflet'; // If using npm install leaflet
+
+const apiKeyParks = import.meta.env.VITE_API_KEY_PARKS;
+const apiKeyBirds = import.meta.env.VITE_API_KEY_BIRDS;
 
 function cacheData(key, data, ttl = 24 * 60 * 60 * 1000) {
     const now = new Date().getTime();
@@ -17,27 +20,25 @@ function getCachedData(key) {
     return data;
 }
 
-// Fetch bird migration data from eBird API
-async function loadBirdData() {
+export async function loadBirdData() {
     const cacheKey = 'birdData';
     let birdData = getCachedData(cacheKey);
 
     if (!birdData) {
         try {
-            // Example: Fetch recent observations for a region (e.g., US)
             const response = await fetch(`https://api.ebird.org/v2/data/obs/US/recent`, {
-                headers: { 'X-eBirdApiToken': EBIRD_API_KEY }
+                headers: { 'X-eBirdApiToken': apiKeyBirds }
             });
             if (!response.ok) throw new Error('Failed to fetch bird data');
             birdData = await response.json();
             cacheData(cacheKey, birdData);
         } catch (error) {
             console.error('Error fetching bird data:', error);
+            document.querySelector('.pageHeading').textContent = 'Failed to load bird data';
             return;
         }
     }
 
-    // Plot bird data as GeoJSON
     const geojson = {
         type: 'FeatureCollection',
         features: birdData.map(observation => ({
@@ -60,24 +61,23 @@ async function loadBirdData() {
     }).addTo(map);
 }
 
-// Fetch NPS data
-async function loadNPSData() {
+export async function loadNPSData() {
     const cacheKey = 'npsData';
     let npsData = getCachedData(cacheKey);
 
     if (!npsData) {
         try {
-            const response = await fetch(`https://developer.nps.gov/api/v1/parks?limit=50&api_key=${NPS_API_KEY}`);
+            const response = await fetch(`https://developer.nps.gov/api/v1/parks?limit=50&api_key=${apiKeyParks}`);
             if (!response.ok) throw new Error('Failed to fetch NPS data');
             npsData = await response.json();
             cacheData(cacheKey, npsData);
         } catch (error) {
             console.error('Error fetching NPS data:', error);
+            document.querySelector('.pageHeading').textContent = 'Failed to load park data';
             return;
         }
     }
 
-    // Plot NPS data as markers
     npsData.data.forEach(park => {
         if (park.latitude && park.longitude) {
             L.marker([park.latitude, park.longitude])

@@ -42,18 +42,16 @@ h1 {
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
+.header {
   will-change: filter;
   transition: filter 300ms;
 }
 
-.logo:hover {
+.header:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
 
-.logo.vanilla:hover {
+.header.vanilla:hover {
   filter: drop-shadow(0 0 2em #f7df1eaa);
 }
 
@@ -90,25 +88,34 @@ button:focus-visible {
   border-bottom: 2px solid var(--primary-color);
 }
 
-#headerImage {
-  scale: .2;
-  max-width: auto;
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f8f8f8; /* Optional: improve visibility */
 }
 
-#map-container {
-  width: 100%;
-  height: calc(100vh - 80px);
-  /* Full height minus header */
+.header img {
+    max-width: 50px; /* Adjust as needed */
+    height: auto;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 1.5rem;
 }
 
 #map {
-  width: 100%;
-  height: 100%;
+    width: 100%;
+    min-height: 500px;
 }
+
 
 /* Responsive design */
 @media (max-width: 600px) {
-  #map-container {
+  .map {
     height: calc(100vh - 100px);
   }
 }

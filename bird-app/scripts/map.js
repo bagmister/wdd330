@@ -1,14 +1,19 @@
-let map;
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 
-// Initialize the map after partial is loaded
-function initMap() {
+export let map; // Export for externalSources.js
+
+export function initMap() {
     const mapContainer = document.getElementById('map');
-    if (!mapContainer) return;
+    if (!mapContainer) {
+        console.error('Map container not found');
+        return;
+    }
 
-    // Initialize Leaflet map
+    // start map and default to Salt Lake City, Utah
     map = L.map('map', {
-        center: [39.8283, -98.5795], // Default: Geographic center of USA
-        zoom: 4,
+        center: [40.7608, -111.8910],
+        zoom: 10,
         zoomControl: true,
         attributionControl: true
     });
@@ -47,11 +52,14 @@ function getUserLocation() {
             },
             (error) => {
                 console.error('Geolocation error:', error.message);
-                alert('Unable to retrieve your location. Using default view.');
+                alert('Unable to retrieve your location or you denied access. Defaulting to Salt Lake City, Utah.');
+                map.setView([40.7608, -111.8910], 10);
             }
         );
     } else {
-        alert('Geolocation is not supported by your browser.');
+        console.error('Geolocation not supported');
+        alert('Geolocation is not supported by your browser. Defaulting to Salt Lake City, Utah.');
+        map.setView([40.7608, -111.8910], 10);
     }
 }
 
