@@ -1,6 +1,6 @@
 import { loadpageSection } from './utils.mjs';
 import { initMap } from './map.js';
-import { loadBirdData, loadNPSData } from './externalSources.js';
+import { loadRecentSightingsBirdData, loadNPSData, getStateCode } from './externalSources.js';
 
 const partialFilePath = '/partials';
 const headerContainer = document.querySelector('.headerForPage');
@@ -34,7 +34,7 @@ function loadContent(url) {
     });
     if (url.includes('birdwatching')) {
         pageHeading.textContent = 'Local Bird Sightings';
-        loadBirdData();
+        loadRecentSightingsBirdData();
     } else if (url.includes('nationalPark')) {
         pageHeading.textContent = 'Closest National Park Info';
         loadNPSData();

@@ -1,5 +1,7 @@
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import { loadRecentSightingsBirdData, loadNPSData, getStateCode } from './externalSources.js';
+
 
 export let map; // Export for externalSources.js
 
@@ -28,9 +30,10 @@ export function initMap() {
 
     // Get user location
     getUserLocation();
+    let state = getStateCode()
 
     // Load bird migration and NPS data
-    loadBirdData();
+    loadRecentSightingsBirdData();
     loadNPSData();
 
     // Save map state on move or zoom

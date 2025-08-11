@@ -3,6 +3,7 @@ import L from 'leaflet'; // If using npm install leaflet
 
 const apiKeyParks = import.meta.env.VITE_API_KEY_PARKS;
 const apiKeyBirds = import.meta.env.VITE_API_KEY_BIRDS;
+const apiKeyGeoName = import.meta.env.VITE_API_KEY_GEONAME
 
 function cacheData(key, data, ttl = 24 * 60 * 60 * 1000) {
     const now = new Date().getTime();
@@ -20,7 +21,24 @@ function getCachedData(key) {
     return data;
 }
 
-export async function loadBirdData() {
+export async function getStateCode(latitude, longitude){
+    const cacheKey = 'stateData';
+    let stateData = getCachedData(cacheKey);
+    if (!stateData) {
+        try{
+            let response = await fetch(`api.geonames.org/countrySubdivisionJSON?lat=${latitude}&lng${longitude}&username=${apiKeyGeoName}`);
+            if (!response.ok) throw new Error('Failed to fetch state data');
+            stateData = await response.json();
+            cacheData(cacheKey, stateData);
+        } catch (error) {
+            console.error('Error fetching state data:', error);
+            document.querySelector('.pageHeading').textContent = 'Failed to load state data';
+            return;
+        }
+    }
+}
+
+export async function loadRecentSightingsBirdData() {
     const cacheKey = 'birdData';
     let birdData = getCachedData(cacheKey);
 
@@ -67,7 +85,7 @@ export async function loadNPSData() {
 
     if (!npsData) {
         try {
-            const response = await fetch(`https://developer.nps.gov/api/v1/parks?limit=50&api_key=${apiKeyParks}`);
+            const response = await fetch(`developer.nps.gov/api/v1/parks?stateCode=${stateCode}&limit=50&&api_key=${apiKeyParks}`);
             if (!response.ok) throw new Error('Failed to fetch NPS data');
             npsData = await response.json();
             cacheData(cacheKey, npsData);
