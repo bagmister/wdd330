@@ -1,7 +1,11 @@
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import { loadRecentSightingsBirdData, loadNPSData, getStateCode } from './externalSources.js';
+import { setLocalStorage } from './utils.mjs';
 
+
+export let latitude
+export let longitude
 
 export let map; // Export for externalSources.js
 
@@ -20,33 +24,31 @@ export function initMap() {
         attributionControl: true
     });
 
-    // Add OpenStreetMap tiles
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
-    // Load stored map state
     loadMapState();
 
-    // Get user location
     getUserLocation();
     let state = getStateCode()
 
-    // Load bird migration and NPS data
     loadRecentSightingsBirdData();
     loadNPSData();
 
-    // Save map state on move or zoom
     map.on('moveend zoomend', saveMapState);
 }
 
-// Get user's geolocation
 function getUserLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
                 map.setView([latitude, longitude], 10);
+                latitude = position.coords.latitude
+                longitude = position.coords.longitude
+                setLocalStorage("latitude", latitude)
+                setLocalStorage("longitude", longitude)
                 L.marker([latitude, longitude])
                     .addTo(map)
                     .bindPopup('Your Location')
@@ -57,6 +59,8 @@ function getUserLocation() {
                 console.error('Geolocation error:', error.message);
                 alert('Unable to retrieve your location or you denied access. Defaulting to Salt Lake City, Utah.');
                 map.setView([40.7608, -111.8910], 10);
+                setLocalStorage("latitude", 40.7608)
+                setLocalStorage("longitude", -111.8910)
             }
         );
     } else {
