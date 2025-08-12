@@ -21,7 +21,6 @@ export async function getStateCode(latitude, longitude) {
 
     if (!state) {
         try {
-            // Use proxy path if configured in vite.config.js
             let response = await fetch(`http://api.geonames.org/countrySubdivisionJSON?lat=${latitude}&lng=${longitude}&username=${apiKeyGeoName}`);
             if (!response.ok) throw new Error('Failed to fetch state data');
             stateData = await response.json();
