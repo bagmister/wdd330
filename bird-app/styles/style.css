@@ -85,6 +85,7 @@ button:focus-visible {
 }
 
 .divider {
+  padding-top: 3rem;
   border-bottom: 2px solid var(--primary-color);
 }
 

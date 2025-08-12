@@ -1,41 +1,39 @@
 import { map } from './map.js';
-import L from 'leaflet'; // If using npm install leaflet
+import L from 'leaflet';
 
 const apiKeyParks = import.meta.env.VITE_API_KEY_PARKS;
 const apiKeyBirds = import.meta.env.VITE_API_KEY_BIRDS;
-const apiKeyGeoName = import.meta.env.VITE_API_KEY_GEONAME
+const apiKeyGeoName = import.meta.env.VITE_API_KEY_GEONAME;
 
-function cacheData(key, data, ttl = 24 * 60 * 60 * 1000) {
-    const now = new Date().getTime();
-    localStorage.setItem(key, JSON.stringify({ data, expiry: now + ttl }));
+function cacheData(key, data) {
+    localStorage.setItem(key, JSON.stringify(data));
 }
 
 function getCachedData(key) {
     const cached = localStorage.getItem(key);
-    if (!cached) return null;
-    const { data, expiry } = JSON.parse(cached);
-    if (new Date().getTime() > expiry) {
-        localStorage.removeItem(key);
-        return null;
-    }
-    return data;
+    return cached ? JSON.parse(cached) : null;
 }
 
-export async function getStateCode(latitude, longitude){
-    const cacheKey = 'stateData';
+export async function getStateCode(latitude, longitude) {
+    const cacheKey = 'state';
     let stateData = getCachedData(cacheKey);
-    if (!stateData) {
-        try{
-            let response = await fetch(`api.geonames.org/countrySubdivisionJSON?lat=${latitude}&lng${longitude}&username=${apiKeyGeoName}`);
+    let state = stateData?.adminCode1 || null;
+
+    if (!state) {
+        try {
+            // Use proxy path if configured in vite.config.js
+            let response = await fetch(`http://api.geonames.org/countrySubdivisionJSON?lat=${latitude}&lng=${longitude}&username=${apiKeyGeoName}`);
             if (!response.ok) throw new Error('Failed to fetch state data');
             stateData = await response.json();
-            cacheData(cacheKey, stateData);
+            state = stateData.adminCode1;
+            cacheData(cacheKey, state);
         } catch (error) {
             console.error('Error fetching state data:', error);
             document.querySelector('.pageHeading').textContent = 'Failed to load state data';
-            return;
+            return null;
         }
     }
+    return state;
 }
 
 export async function loadRecentSightingsBirdData() {
@@ -79,13 +77,19 @@ export async function loadRecentSightingsBirdData() {
     }).addTo(map);
 }
 
-export async function loadNPSData() {
+export async function loadNPSDataparksByState(stateCode) {
+    if (!stateCode) {
+        console.error('No state code provided');
+        document.querySelector('.pageHeading').textContent = 'No state code available';
+        return;
+    }
+
     const cacheKey = 'npsData';
     let npsData = getCachedData(cacheKey);
 
     if (!npsData) {
         try {
-            const response = await fetch(`developer.nps.gov/api/v1/parks?stateCode=${stateCode}&limit=50&&api_key=${apiKeyParks}`);
+            const response = await fetch(`https://developer.nps.gov/api/v1/parks?stateCode=${stateCode}&limit=50&api_key=${apiKeyParks}`);
             if (!response.ok) throw new Error('Failed to fetch NPS data');
             npsData = await response.json();
             cacheData(cacheKey, npsData);

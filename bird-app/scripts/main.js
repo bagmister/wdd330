@@ -1,6 +1,7 @@
 import { loadpageSection } from './utils.mjs';
-import { initMap } from './map.js';
-import { loadRecentSightingsBirdData, loadNPSData, getStateCode } from './externalSources.js';
+import { initMap, latitude, longitude } from './map.js';
+import { loadRecentSightingsBirdData, loadNPSDataparksByState, getStateCode } from './externalSources.js';
+import { map } from './map.js';
 
 const partialFilePath = '/partials';
 const headerContainer = document.querySelector('.headerForPage');
@@ -10,12 +11,11 @@ footerContainer.innerHTML = '';
 
 document.addEventListener('DOMContentLoaded', async () => {
     await Promise.all([
-        loadpageSection(0, partialFilePath), 
-        loadpageSection(1, partialFilePath) 
+        loadpageSection(0, partialFilePath),
+        loadpageSection(1, partialFilePath)
     ]);
     initMap();
 
-    
     document.querySelectorAll('nav a').forEach(link => {
         link.addEventListener('click', (e) => {
             e.preventDefault();
@@ -25,23 +25,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-function loadContent(url) {
+async function loadContent(url) {
     const pageHeading = document.querySelector('.pageHeading');
-    window.map.eachLayer(layer => {
-        if (layer !== window.map._layers[Object.keys(window.map._layers)[0]]) {
-            window.map.removeLayer(layer);
-        }
+    map.eachLayer(layer => {
+        if (layer instanceof L.TileLayer) return;
+        map.removeLayer(layer);
     });
+
     if (url.includes('birdwatching')) {
         pageHeading.textContent = 'Local Bird Sightings';
-        loadRecentSightingsBirdData();
+        await loadRecentSightingsBirdData();
     } else if (url.includes('nationalPark')) {
         pageHeading.textContent = 'Closest National Park Info';
-        loadNPSData();
+        const stateCode = await getStateCode(latitude, longitude);
+        if (stateCode) {
+            await loadNPSDataparksByState(stateCode);
+        } else {
+            pageHeading.textContent = 'Failed to load park data';
+        }
     } else {
         pageHeading.textContent = 'Home';
-        loadBirdData();
-        loadNPSData();
+        await loadRecentSightingsBirdData();
     }
-    getUserLocation();
 }
