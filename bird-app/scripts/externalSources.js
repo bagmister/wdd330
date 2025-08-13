@@ -98,12 +98,42 @@ export async function loadNPSDataparksByState(stateCode) {
             return;
         }
     }
-
-    npsData.data.forEach(park => {
+    for (const park of npsData.data) {
         if (park.latitude && park.longitude) {
+            const event = await getFirstActivityForPark(park.parkCode);
             L.marker([park.latitude, park.longitude])
                 .addTo(map)
-                .bindPopup(`<b>${park.fullName}</b><br>${park.description}`);
+                .bindPopup(`
+                    <b>${park.fullName}</b><br>
+                    ${park.description}<br>
+                    <a href="${park.url}" target="_blank">Park Site</a><br>
+                    Upcoming activity: ${event}
+                `);
         }
-    });
+    }
+}
+
+export async function getFirstActivityForPark(parkCode) {
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0');
+    var yyyy = today.getFullYear();
+
+
+    today = yyyy + '-' + mm  + '-' + dd;
+
+    try {
+        const response = await fetch(`https://developer.nps.gov/api/v1/events?parkCode=${parkCode}&dateStart=${today}&api_key=${apiKeyParks}`);
+        if (!response.ok) throw new Error('Failed to fetch NPS data');
+        let eventData = await response.json();
+        if (!eventData.data.length == 0) {
+           return `<br>${eventData.data[0].title}: ${eventData.data[0].description}<br>`
+        }
+        return "No upcoming event"
+
+    } catch (error) {
+        console.error('Error fetching NPS event data:', error);
+        document.querySelector('.pageHeading').textContent = 'Failed to load park data';
+        return;
+    }
 }
