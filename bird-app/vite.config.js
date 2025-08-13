@@ -2,6 +2,11 @@ import { resolve } from "path";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  server: {
+     cors: {
+      origin: '*', // Allows all origins
+    },
+  },
   base: "/", // Explicitly set base to root
   build: {
     publicDir: './images',
