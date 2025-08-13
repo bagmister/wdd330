@@ -64,14 +64,15 @@ export async function loadRecentSightingsBirdData() {
             },
             properties: {
                 species: observation.comName,
-                date: observation.obsDt
+                date: observation.obsDt,
+                loc: observation.locName
             }
         }))
     };
 
     L.geoJSON(geojson, {
         onEachFeature: (feature, layer) => {
-            layer.bindPopup(`<b>${feature.properties.species}</b><br>Observed: ${feature.properties.date}`);
+            layer.bindPopup(`<b>${feature.properties.species}</b><br>Observed: ${feature.properties.date} location: ${feature.properties.loc}`);
         }
     }).addTo(map);
 }
