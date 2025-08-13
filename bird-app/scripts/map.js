@@ -3,10 +3,9 @@ import L from 'leaflet';
 import { loadRecentSightingsBirdData, loadNPSDataparksByState, getStateCode } from './externalSources.js';
 import { setLocalStorage } from './utils.mjs';
 
-export let latitude = localStorage.getItem("latitude") || 40.7608; // Default to Salt Lake City
+export let latitude = localStorage.getItem("latitude") || 40.7608;
 export let longitude = localStorage.getItem("longitude") || -111.8910;
-
-export let map; // Export for externalSources.js and main.js
+export let map;
 
 export function initMap() {
     const mapContainer = document.getElementById('map');
@@ -14,6 +13,12 @@ export function initMap() {
         console.error('Map container not found');
         return;
     }
+
+    // // Destroy existing map instance if it exists
+    // if (map) {
+    //     map.remove();
+    //     map = null;
+    // }
 
     map = L.map('map', {
         center: [latitude, longitude],

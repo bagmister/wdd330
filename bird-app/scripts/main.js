@@ -6,14 +6,16 @@ import { map } from './map.js';
 const partialFilePath = '/partials';
 const headerContainer = document.querySelector('.headerForPage');
 const footerContainer = document.querySelector('.footerForPage');
-headerContainer.innerHTML = '';
-footerContainer.innerHTML = '';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    headerContainer.innerHTML = '';
+    footerContainer.innerHTML = '';
+
     await Promise.all([
         loadpageSection(0, partialFilePath),
         loadpageSection(1, partialFilePath)
     ]);
+
     initMap();
 
     document.querySelectorAll('nav a').forEach(link => {
@@ -23,10 +25,22 @@ document.addEventListener('DOMContentLoaded', async () => {
             loadContent(href);
         });
     });
+
+    loadContent(window.location.pathname);
 });
 
 async function loadContent(url) {
     const pageHeading = document.querySelector('.pageHeading');
+
+    headerContainer.innerHTML = '';
+    footerContainer.innerHTML = '';
+    pageHeading.innerHTML = '';
+
+    await Promise.all([
+        loadpageSection(0, partialFilePath),
+        loadpageSection(1, partialFilePath)
+    ]);
+
     map.eachLayer(layer => {
         if (layer instanceof L.TileLayer) return;
         map.removeLayer(layer);
