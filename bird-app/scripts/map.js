@@ -72,7 +72,7 @@ async function getUserLocation() {
                 .openPopup();
             saveMapState();
         } catch (error) {
-            console.error('Geolocation error:', error.message);
+            console.warn('Geolocation error:', error.message);
             handleLocationError(error);
         }
         return;
@@ -95,7 +95,7 @@ async function getUserLocation() {
                 .openPopup();
             saveMapState();
         } catch (error) {
-            console.error('Geolocation error:', error.message);
+            console.warn('Geolocation error:', error.message);
             handleLocationError(error);
         }
     } else {
@@ -109,7 +109,7 @@ async function getUserLocation() {
 }
 
 function handleLocationError(error) {
-    console.error('Geolocation error:', error.message);
+    console.warn('Geolocation error:', error.message);
     setLocalStorage("geolocationPermission", "denied");
     setLocalStorage("latitude", 40.7608);
     setLocalStorage("longitude", -111.8910);
