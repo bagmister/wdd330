@@ -3,8 +3,10 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   server: {
-     cors: {
-      origin: '*', // Allows all origins
+    host: 'localhost',
+    port: 5173,
+    cors: {
+      origin: '*',
     },
   },
   base: "/", // Explicitly set base to root
