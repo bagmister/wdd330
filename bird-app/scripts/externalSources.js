@@ -21,7 +21,7 @@ export async function getStateCode(latitude, longitude) {
 
     if (!state) {
         try {
-            let response = await fetch(`https://secure.geonames.org/countrySubdivisionJSON?lat=${latitude}&lng=${longitude}&username=${apiKeyGeoName}`);
+            let response = await fetch(`/api/geonames/countrySubdivisionJSON?lat=${latitude}&lng=${longitude}&username=${apiKeyGeoName}`);
             if (!response.ok) throw new Error('Failed to fetch state data');
             stateData = await response.json();
             state = stateData.adminCode1;
@@ -41,7 +41,7 @@ export async function loadRecentSightingsBirdData() {
 
     if (!birdData) {
         try {
-            const response = await fetch(`https://api.ebird.org/v2/data/obs/US/recent`, {
+            const response = await fetch(`/api/ebird/v2/data/obs/US/recent`, {
                 headers: { 'X-eBirdApiToken': apiKeyBirds }
             });
             if (!response.ok) throw new Error('Failed to fetch bird data');
@@ -89,7 +89,7 @@ export async function loadNPSDataparksByState(stateCode) {
 
     if (!npsData) {
         try {
-            const response = await fetch(`https://developer.nps.gov/api/v1/parks?stateCode=${stateCode}&limit=50&api_key=${apiKeyParks}`);
+            const response = await fetch(`/api/nps/api/v1/parks?stateCode=${stateCode}&limit=50&api_key=${apiKeyParks}`);
             if (!response.ok) throw new Error('Failed to fetch NPS data');
             npsData = await response.json();
             cacheData(cacheKey, npsData);
@@ -124,7 +124,7 @@ export async function getFirstActivityForPark(parkCode) {
     today = yyyy + '-' + mm  + '-' + dd;
 
     try {
-        const response = await fetch(`https://developer.nps.gov/api/v1/events?parkCode=${parkCode}&dateStart=${today}&api_key=${apiKeyParks}`);
+        const response = await fetch(`/api/nps/api/v1/events?parkCode=${parkCode}&dateStart=${today}&api_key=${apiKeyParks}`);
         if (!response.ok) throw new Error('Failed to fetch NPS data');
         let eventData = await response.json();
         if (!eventData.data.length == 0) {

@@ -1,0 +1,35 @@
+[[redirects]]
+  from = "/nationalPark"
+  to = "/nationalPark/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/birdwatching"
+  to = "/birdwatching/index.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/geonames/*"
+  to = "https://secure.geonames.org/:splat"
+  status = 200
+  force = true
+  query = {}
+  headers = { "Access-Control-Allow-Origin" = "*" }
+
+[[redirects]]
+  from = "/api/ebird/*"
+  to = "https://api.ebird.org/:splat"
+  status = 200
+  force = true
+  query = {}
+  headers = { "Access-Control-Allow-Origin" = "*" }
+
+[[redirects]]
+  from = "/api/nps/*"
+  to = "https://developer.nps.gov/:splat"
+  status = 200
+  force = true
+  query = {}
+  headers = { "Access-Control-Allow-Origin" = "*" }
